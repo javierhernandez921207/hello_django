@@ -1,5 +1,13 @@
-<h1>Tasks</h1>
-{% for task in tasks %}
-  <h2>{{ task.title }}</h2>
-  <p>{{ task.description }}</p>
-{% endfor %}
+{%extends 'layout/base.html'%}
+
+{% block content %}
+  <h1>Tasks</h1>
+  {% for task in tasks %}
+    <h2>{{ task.title }}</h2>
+    <p>{{ task.description }}</p>
+    <button>❌ delete</button>
+    {% if task.done == False %}
+      <button>✅ done</button>
+    {% endif %} 
+  {% endfor %} 
+{% endblock %}
