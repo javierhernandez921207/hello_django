@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import Project, Task
 from .forms import CreateNewProject, CreateNewTask
 # Create your views here.
+
 def index(request):
     title = 'My App'
     return render(request, 'index.html', {'title': title})
@@ -14,7 +15,7 @@ def hello(request, user):
     return HttpResponse("Hello %s" % user)
 
 def projects(request):
-    projects  = list(Project.objects.values())
+    projects = list(Project.objects.values())
     return render(request, 'projects/projects.html', {'projects': projects})
 
 def tasks(request):
@@ -25,7 +26,8 @@ def create_task(request):
     if request.method == 'POST':
         form = CreateNewTask(request.POST)
         if form.is_valid():
-            task = Task(title=form.cleaned_data['title'], description=form.cleaned_data['description'], project_id=1)
+            task = Task(
+                title=form.cleaned_data['title'], description=form.cleaned_data['description'], project_id=1)
             task.save()
             return redirect('tasks')
         else:
@@ -43,8 +45,13 @@ def create_project(request):
             return render(request, 'projects/project_create.html', {'form': CreateNewProject()})
     return render(request, 'projects/project_create.html', {'form': CreateNewProject()})
 
+def detail_project(request, id):
+    project = get_object_or_404(Project, id=id)
+    tasks = list(Task.objects.filter(project_id=id).values())
+    return render(request, 'projects/project_detail.html' , {'project': project, 'tasks': tasks})    
+
 def update_task(request, id):
-    task = get_object_or_404(Task,id=id)
+    task = get_object_or_404(Task, id=id)
     if request.method == 'POST':
         form = CreateNewTask(request.POST)
         if form.is_valid():
@@ -57,14 +64,14 @@ def update_task(request, id):
     return render(request, 'tasks/task_update.html', {'form': CreateNewTask(), 'task': task})
 
 def delete_task(request, id):
-    task = get_object_or_404(Task,id=id)
+    task = get_object_or_404(Task, id=id)
     task.delete()
     return redirect('tasks')
 
 def task(request, id):
-    task = get_object_or_404(Task,id=id)    
+    task = get_object_or_404(Task, id=id)
     return HttpResponse(f'Task: {task.title} {task.description}')
 
 def taskName(request, name):
-    task = Task.objects.get(title=name)    
+    task = Task.objects.get(title=name)
     return HttpResponse(f'Task: {task.title} {task.description}')
